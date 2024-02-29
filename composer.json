@@ -1,0 +1,24 @@
+{
+    "name": "d076/sanctum-refresh-tokens",
+    "description": "Refresh token realization for laravel sanctum",
+    "type": "library",
+    "require": {
+        "php": "^8.2",
+        "laravel/sanctum": "^3.3",
+        "laravel/framework": "^10"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "D076\\SanctumRefreshTokens\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Dmitry Titov",
+            "email": "dezmond076@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
