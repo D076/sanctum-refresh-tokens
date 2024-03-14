@@ -1,11 +1,12 @@
 {
     "name": "d076/sanctum-refresh-tokens",
     "description": "Refresh token realization for laravel sanctum",
+    "keywords": ["laravel", "sanctum", "auth"],
     "type": "library",
     "require": {
         "php": "^8.2",
-        "laravel/sanctum": "^3.3",
-        "laravel/framework": "^10"
+        "laravel/sanctum": "^4.0",
+        "laravel/framework": "^11.0"
     },
     "license": "MIT",
     "autoload": {
@@ -22,7 +23,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "D076\\SanctumRefreshTokens\\Providers\\SanctumServiceProvider"
+                "D076\\SanctumRefreshTokens\\Providers\\SanctumRefreshServiceProvider"
             ]
         }
     },

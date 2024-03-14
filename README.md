@@ -1,10 +1,16 @@
 # Laravel SanctumRefreshTokens
 
+## Installation
+
+```composer require d076/sanctum-refresh-tokens```
+
 ## Usage
 
-1. Run migrations ```php artisan migrate```
+1. Publish migrations ```php artisan vendor:publish --tag=sanctum-refresh-migrations```
 
-2. Extend your User model from AuthenticatableUser
+2. Run migrations ```php artisan migrate```
+
+3. Extend your User model from AuthenticatableUser
     ```php
     use D076\SanctumRefreshTokens\Models\AuthenticatableUser;
     
@@ -13,7 +19,7 @@
     }
     ```
 
-3. Add prune commands to Kernel
+4. Add prune commands to Kernel
     ```php
     protected function schedule(Schedule $schedule): void
     {
@@ -22,15 +28,16 @@
     }
     ```
 
-4. To create access and refresh tokens use TokenService
+5. To create access and refresh tokens use TokenService
     ```php
     use D076\SanctumRefreshTokens\Services\TokenService;
     
+    /** @var \D076\SanctumRefreshTokens\Models\AuthenticatableUser $user */
     (new TokenService($user))->createTokens();
     (new TokenService($user))->deleteCurrentTokens();
     ```
 
-5. To change tokens expire time configure config/sanctum.php
+6. To change tokens expire time configure config/sanctum.php
     ```php
     'expiration' => env('SANCTUM_ACCESS_TOKEN_EXPIRATION', 1440), // minutes
     'refresh_token_expiration' => env('SANCTUM_REFRESH_TOKEN_EXPIRATION', 43200), // minutes

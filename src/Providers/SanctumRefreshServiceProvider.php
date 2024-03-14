@@ -7,7 +7,7 @@ use D076\SanctumRefreshTokens\Console\Commands\PruneRefreshExpired;
 use D076\SanctumRefreshTokens\Models\PersonalRefreshToken;
 use D076\SanctumRefreshTokens\Observers\RefreshTokenObserver;
 
-class SanctumServiceProvider extends ServiceProvider
+class SanctumRefreshServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
@@ -17,9 +17,11 @@ class SanctumServiceProvider extends ServiceProvider
     {
         PersonalRefreshToken::observe([RefreshTokenObserver::class]);
 
-        $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
-
         if ($this->app->runningInConsole()) {
+            $this->publishesMigrations([
+                __DIR__.'/../../database/migrations' => database_path('migrations'),
+            ], 'sanctum-refresh-migrations');
+
             $this->commands([
                 PruneRefreshExpired::class,
             ]);

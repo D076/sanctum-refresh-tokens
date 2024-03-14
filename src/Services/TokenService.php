@@ -24,7 +24,7 @@ class TokenService implements TokenServiceInterface
         [$accessTokenExpiresAt, $refreshTokenExpiresAt] = $this->getExpiresAt();
 
         $this->token = $this->user->createToken(
-            TokenType::ACCESS_TOKEN->value,
+            TokenType::AccessToken->value,
             $abilities,
             $accessTokenExpiresAt,
         );
