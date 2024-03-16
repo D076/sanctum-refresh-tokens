@@ -19,13 +19,12 @@
     }
     ```
 
-4. Add prune commands to Kernel
+4.  Add prune commands to Schedule
     ```php
-    protected function schedule(Schedule $schedule): void
-    {
-        $schedule->command('sanctum:prune-expired --hours=0')->hourly();
-        $schedule->command('sanctum:prune-refresh-expired --hours=0')->daily();
-    }
+    use Illuminate\Support\Facades\Schedule;
+    
+    Schedule::command('sanctum:prune-expired --hours=0')->hourly();
+    Schedule::command('sanctum:prune-refresh-expired --hours=0')->daily();
     ```
 
 5. To create access and refresh tokens use TokenService
