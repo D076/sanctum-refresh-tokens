@@ -46,10 +46,11 @@ class AuthService implements IAuthService
             $accessTokenExpiresAt = ConfigHelper::getAccessTokenExpiresAt();
             $refreshTokenExpiresAt = ConfigHelper::getRefreshTokenExpiresAt($remember);
 
-            return (new TokenService($this->user))->createTokens($accessTokenExpiresAt, $refreshTokenExpiresAt);
+            return app(ITokenService::class, ['user' => $this->user])
+                ->createTokens($accessTokenExpiresAt, $refreshTokenExpiresAt);
         }
 
-        throw new AuthenticationException(__('auth.failed'));
+        throw new AuthenticationException();
     }
 
     /**
@@ -61,7 +62,7 @@ class AuthService implements IAuthService
             throw new AuthenticationException();
         }
 
-        (new TokenService($this->user))->deleteCurrentTokens();
+        app(ITokenService::class, ['user' => $this->user])->deleteCurrentTokens();
     }
 
     /**
@@ -94,7 +95,7 @@ class AuthService implements IAuthService
             $this->user->$passwordField = Hash::make($password);
             $this->user->save();
 
-            (new TokenService($this->user))->deleteAllTokens();
+            app(ITokenService::class, ['user' => $this->user])->deleteAllTokens();
         }
 
         return $this;
