@@ -2,14 +2,16 @@
 
 namespace D076\SanctumRefreshTokens\Services;
 
+use D076\SanctumRefreshTokens\Enums\TokenType;
+use D076\SanctumRefreshTokens\Helpers\ConfigHelper;
+use Illuminate\Support\Carbon;
 use Laravel\Sanctum\NewAccessToken;
 use D076\SanctumRefreshTokens\DTOs\TokensDTO;
-use D076\SanctumRefreshTokens\Enums\TokenType;
 use D076\SanctumRefreshTokens\Models\AuthenticatableUser;
 use D076\SanctumRefreshTokens\Models\PersonalRefreshToken;
 use D076\SanctumRefreshTokens\NewRefreshToken;
 
-class TokenService implements TokenServiceInterface
+class TokenService implements ITokenService
 {
     protected NewAccessToken $token;
 
@@ -19,9 +21,13 @@ class TokenService implements TokenServiceInterface
     {
     }
 
-    public function createTokens(array $abilities = ['*']): TokensDTO
-    {
-        [$accessTokenExpiresAt, $refreshTokenExpiresAt] = $this->getExpiresAt();
+    public function createTokens(
+        ?Carbon $accessTokenExpiresAt = null,
+        ?Carbon $refreshTokenExpiresAt = null,
+        array $abilities = ['*']
+    ): TokensDTO {
+        $accessTokenExpiresAt ??= ConfigHelper::getAccessTokenExpiresAt();
+        $refreshTokenExpiresAt ??= ConfigHelper::getRefreshTokenExpiresAt();
 
         $this->token = $this->user->createToken(
             TokenType::AccessToken->value,
@@ -39,8 +45,8 @@ class TokenService implements TokenServiceInterface
             token_type: 'Bearer',
             access_token: $this->token->plainTextToken,
             refresh_token: $this->refreshToken->plainTextToken,
-            access_token_expires_at: $accessTokenExpiresAt?->timestamp,
-            refresh_token_expires_at: $refreshTokenExpiresAt?->timestamp,
+            access_token_expires_at: $accessTokenExpiresAt,
+            refresh_token_expires_at: $refreshTokenExpiresAt,
             user: $this->user,
         );
     }
@@ -55,11 +61,9 @@ class TokenService implements TokenServiceInterface
         }
     }
 
-    protected function getExpiresAt(): array
+    public function deleteAllTokens(): void
     {
-        return [
-            now()->addMinutes(config('sanctum.expiration', 1440)),
-            now()->addMinutes(config('sanctum.refresh_token_expiration', 43200)),
-        ];
+        $this->user->tokens()->where('name', '=', TokenType::AccessToken->value)->delete();
+        $this->user->refreshTokens()->delete();
     }
 }

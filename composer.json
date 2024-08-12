@@ -20,13 +20,6 @@
             "email": "dezmond076@gmail.com"
         }
     ],
-    "extra": {
-        "laravel": {
-            "providers": [
-                "D076\\SanctumRefreshTokens\\Providers\\SanctumRefreshServiceProvider"
-            ]
-        }
-    },
     "minimum-stability": "stable",
     "prefer-stable": true
 }
