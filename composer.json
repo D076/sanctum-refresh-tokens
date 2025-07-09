@@ -3,10 +3,20 @@
     "description": "Refresh token realization for laravel sanctum",
     "keywords": ["laravel", "sanctum", "auth"],
     "type": "library",
+    "authors": [
+        {
+            "name": "Dmitry Titov",
+            "email": "dezmond076@gmail.com"
+        }
+    ],
     "require": {
         "php": "^8.2",
-        "laravel/sanctum": "^4.0",
-        "laravel/framework": "^11.0"
+        "ext-json": "*",
+        "illuminate/console": "^11.0|^12.0",
+        "illuminate/contracts": "^11.0|^12.0",
+        "illuminate/database": "^11.0|^12.0",
+        "illuminate/support": "^11.0|^12.0",
+        "laravel/sanctum": "^4.0"
     },
     "license": "MIT",
     "autoload": {
@@ -14,12 +24,13 @@
             "D076\\SanctumRefreshTokens\\": "src/"
         }
     },
-    "authors": [
-        {
-            "name": "Dmitry Titov",
-            "email": "dezmond076@gmail.com"
+    "extra": {
+        "laravel": {
+            "providers": [
+                "D076\\SanctumRefreshTokens\\Providers\\SanctumRefreshServiceProvider"
+            ]
         }
-    ],
+    },
     "minimum-stability": "stable",
     "prefer-stable": true
 }
