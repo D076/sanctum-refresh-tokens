@@ -4,6 +4,9 @@ namespace D076\SanctumRefreshTokens\DTOs;
 
 use Illuminate\Contracts\Support\Arrayable;
 
+/**
+ * @implements Arrayable<string, mixed>
+ */
 final readonly class LoginDTO implements Arrayable
 {
     public function __construct(

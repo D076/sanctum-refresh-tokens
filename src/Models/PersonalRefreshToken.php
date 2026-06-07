@@ -12,7 +12,10 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @property-read int $id
  * @property string $token
  * @property int|null $access_token_id
+ * @property list<string>|null $abilities
  * @property Carbon|null $expires_at
+ * @property-read Carbon $created_at
+ * @property-read Carbon $updated_at
  * @property-read AuthenticatableUser|null $tokenable
  * @property-read PersonalAccessToken|null $accessToken
  */
@@ -21,12 +24,14 @@ class PersonalRefreshToken extends Model
     protected $table = 'personal_refresh_tokens';
 
     protected $casts = [
+        'abilities' => 'array',
         'expires_at' => 'datetime',
     ];
 
     protected $fillable = [
         'access_token_id',
         'token',
+        'abilities',
         'expires_at',
     ];
 
@@ -35,11 +40,17 @@ class PersonalRefreshToken extends Model
         'token',
     ];
 
+    /**
+     * @return MorphTo<Model, $this>
+     */
     public function tokenable(): MorphTo
     {
         return $this->morphTo('tokenable');
     }
 
+    /**
+     * @return BelongsTo<PersonalAccessToken, $this>
+     */
     public function accessToken(): BelongsTo
     {
         return $this->belongsTo(PersonalAccessToken::class, 'access_token_id', 'id');
@@ -47,8 +58,6 @@ class PersonalRefreshToken extends Model
 
     /**
      * Find the token instance matching the given token.
-     *
-     * @return static|null
      */
     public static function findToken(string $token): ?PersonalRefreshToken
     {

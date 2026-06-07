@@ -6,6 +6,9 @@ use Illuminate\Contracts\Support\Arrayable;
 use D076\SanctumRefreshTokens\Models\AuthenticatableUser;
 use Illuminate\Support\Carbon;
 
+/**
+ * @implements Arrayable<string, mixed>
+ */
 final readonly class TokensDTO implements Arrayable
 {
     public function __construct(

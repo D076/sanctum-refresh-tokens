@@ -79,9 +79,15 @@ class AuthService implements IAuthService
         $tokenService = new TokenService($personalRefreshToken->tokenable);
         [$accessTokenExpiresAt, $refreshTokenExpiresAt] = $this->getExpiresAtRefresh($personalRefreshToken);
 
+        // Scope is persisted on the refresh token itself, so it survives even after
+        // the short-lived access token has been pruned. Fall back to full access for
+        // legacy rows created before the abilities column existed.
+        /** @var list<string> $abilities */
+        $abilities = $personalRefreshToken->abilities ?? ['*'];
+
         $personalRefreshToken->delete();
 
-        return $tokenService->createTokens($accessTokenExpiresAt, $refreshTokenExpiresAt);
+        return $tokenService->createTokens($accessTokenExpiresAt, $refreshTokenExpiresAt, $abilities);
     }
 
     public function resetPassword(string $password): IAuthService
@@ -101,6 +107,9 @@ class AuthService implements IAuthService
         return $this;
     }
 
+    /**
+     * @return array{\Illuminate\Support\Carbon, \Illuminate\Support\Carbon}
+     */
     protected function getExpiresAtRefresh(PersonalRefreshToken $personalRefreshToken): array
     {
         $accessTokenExpiresAt = $personalRefreshToken->accessToken?->expires_at
@@ -123,16 +132,17 @@ class AuthService implements IAuthService
     protected function getUserFromCredentials(): ?AuthenticatableUser
     {
         if ($this->loginDTO) {
-            /** @var AuthenticatableUser $model */
-            $model = $this->loginDTO->model;
+            /** @var class-string<AuthenticatableUser> $modelClass */
+            $modelClass = $this->loginDTO->model;
+            $model = new $modelClass();
 
             $emailField = 'email';
             if (method_exists($model, 'getEmailField')) {
                 $emailField = $model->getEmailField();
             }
 
-            /** @var AuthenticatableUser $user */
-            $user = $model::query()->where($emailField, $this->loginDTO->email)->first();
+            /** @var AuthenticatableUser|null $user */
+            $user = $modelClass::query()->where($emailField, $this->loginDTO->email)->first();
 
             return $user && Hash::check($this->loginDTO->password, $user->password ?? Hash::make(''))
                 ? $user

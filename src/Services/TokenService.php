@@ -21,6 +21,9 @@ class TokenService implements ITokenService
     {
     }
 
+    /**
+     * @param  list<string>  $abilities
+     */
     public function createTokens(
         ?Carbon $accessTokenExpiresAt = null,
         ?Carbon $refreshTokenExpiresAt = null,
@@ -37,7 +40,8 @@ class TokenService implements ITokenService
 
         $this->refreshToken = $this->user->createRefreshToken(
             $refreshTokenExpiresAt,
-            $this->token->accessToken?->id,
+            $this->token->accessToken->id,
+            $abilities,
         );
 
         return new TokensDTO(

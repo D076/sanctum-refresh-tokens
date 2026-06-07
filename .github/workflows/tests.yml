@@ -1,0 +1,127 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ── Default suite (SQLite) ──────────────────────────────────────────────────
+  tests:
+    name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { php: '8.3', testbench: '^9.0',  laravel: '11' }
+          - { php: '8.3', testbench: '^10.0', laravel: '12' }
+          - { php: '8.3', testbench: '^11.0', laravel: '13' }
+          - { php: '8.4', testbench: '^9.0',  laravel: '11' }
+          - { php: '8.4', testbench: '^10.0', laravel: '12' }
+          - { php: '8.4', testbench: '^11.0', laravel: '13' }
+          - { php: '8.5', testbench: '^9.0',  laravel: '11' }
+          - { php: '8.5', testbench: '^10.0', laravel: '12' }
+          - { php: '8.5', testbench: '^11.0', laravel: '13' }
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: pdo_sqlite
+          coverage: none
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: composer-${{ matrix.php }}-${{ matrix.testbench }}-${{ hashFiles('composer.json') }}
+          restore-keys: composer-${{ matrix.php }}-${{ matrix.testbench }}-
+
+      - name: Pin testbench to ${{ matrix.testbench }}
+        run: composer require "orchestra/testbench:${{ matrix.testbench }}" --no-update --no-interaction
+
+      - name: Update dependencies
+        run: composer update --prefer-dist --no-interaction
+
+      - name: Run PHPStan
+        run: ./vendor/bin/phpstan analyse --no-progress --memory-limit=512M
+
+      - name: Run tests
+        run: ./vendor/bin/pest --no-coverage
+
+  # ── Cross-database tests (PostgreSQL & MySQL) ───────────────────────────────
+  cross-db:
+    name: Cross-DB / ${{ matrix.driver }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        driver: [pgsql, mysql]
+
+    services:
+      pgsql:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: testing
+          POSTGRES_USER: sanctum
+          POSTGRES_PASSWORD: secret
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: testing
+          MYSQL_USER: sanctum
+          MYSQL_PASSWORD: secret
+          MYSQL_ROOT_PASSWORD: root
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd "mysqladmin ping --silent"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up PHP 8.5
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: pdo_sqlite, pdo_pgsql, pdo_mysql
+          coverage: none
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: composer-8.5-cross-db-${{ hashFiles('composer.json') }}
+          restore-keys: composer-8.5-cross-db-
+
+      - name: Update dependencies
+        run: composer update --prefer-dist --no-interaction
+
+      - name: Run cross-DB tests (${{ matrix.driver }})
+        run: ./vendor/bin/pest --group=cross-db --no-coverage
+        env:
+          DB_DRIVER: ${{ matrix.driver }}
+          PG_HOST: 127.0.0.1
+          PG_DATABASE: testing
+          PG_USERNAME: sanctum
+          PG_PASSWORD: secret
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_DATABASE: testing
+          MYSQL_USERNAME: sanctum
+          MYSQL_PASSWORD: secret

@@ -11,7 +11,14 @@ interface HasApiTokensInterface extends HasApiTokens
 {
     public function refreshTokens(): MorphMany;
 
-    public function createRefreshToken(?DateTimeInterface $expiresAt = null, ?int $accessTokenId = null): NewRefreshToken;
+    /**
+     * @param  list<string>  $abilities
+     */
+    public function createRefreshToken(
+        ?DateTimeInterface $expiresAt = null,
+        ?int $accessTokenId = null,
+        array $abilities = ['*']
+    ): NewRefreshToken;
 
     public function withRefreshToken(?PersonalRefreshToken $refreshToken): static;
 }

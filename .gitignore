@@ -1,5 +1,11 @@
+.idea/
 /vendor/
-/.fleet
-/.idea
-/.vscode
 composer.lock
+.phpunit.result.cache
+/.phpunit.cache/
+docker-compose.yml
+/docker/
+*.md
+!README.md
+!CHANGELOG.md
+!/docs/*.md

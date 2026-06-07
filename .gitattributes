@@ -1,0 +1,14 @@
+# Exclude dev-only files from `composer require` dist archives.
+# Verify locally before release: `git archive HEAD | tar tf -`
+/.github            export-ignore
+/tests              export-ignore
+/docker             export-ignore
+/docker-compose.yml export-ignore
+/.gitattributes     export-ignore
+/.gitignore         export-ignore
+/.editorconfig      export-ignore
+/phpunit.xml        export-ignore
+/phpunit.xml.dist   export-ignore
+/phpstan.neon       export-ignore
+/phpstan.neon.dist  export-ignore
+/.idea              export-ignore

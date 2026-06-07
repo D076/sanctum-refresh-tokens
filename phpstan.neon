@@ -1,0 +1,28 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 6
+    paths:
+        - src
+    # Raise to 8 incrementally as the public API is fully typed.
+
+    # Sanctum's runtime type for currentAccessToken() comes from PHPDoc, which
+    # makes PHPStan treat the null-check as dead code. The check is real at runtime.
+    treatPhpDocTypesAsCertain: false
+
+    ignoreErrors:
+        # Sanctum's PersonalAccessToken declares `expires_at`/`created_at` only via
+        # casts/timestamps, so Larastan can't see them on the third-party model.
+        -
+            message: '#Access to an undefined property Laravel\\Sanctum\\PersonalAccessToken::\$(expires_at|created_at)#'
+            path: src/Services/AuthService.php
+
+        # MorphMany's TDeclaringModel is invariant, so an interface cannot express
+        # the relation's natural `$this` declaring-model without breaking either the
+        # interface declaration or the trait's child return type. The concrete generic
+        # lives on the HasRefreshTokens trait (where `create()` inference matters);
+        # the contract method is intentionally left ungenericised.
+        -
+            message: '#return type with generic class Illuminate\\Database\\Eloquent\\Relations\\MorphMany does not specify its types#'
+            path: src/HasApiTokensInterface.php

@@ -6,6 +6,9 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use D076\SanctumRefreshTokens\Models\PersonalRefreshToken;
 
+/**
+ * @implements Arrayable<string, mixed>
+ */
 class NewRefreshToken implements Arrayable, Jsonable
 {
     public PersonalRefreshToken $refreshToken;
@@ -16,14 +19,11 @@ class NewRefreshToken implements Arrayable, Jsonable
     public string $plainTextToken;
 
     /**
-     * Create a new access token result.
-     *
-     * @param  \Laravel\Sanctum\PersonalAccessToken  $accessToken
-     * @return void
+     * Create a new refresh token result.
      */
-    public function __construct(PersonalRefreshToken $accessToken, string $plainTextToken)
+    public function __construct(PersonalRefreshToken $refreshToken, string $plainTextToken)
     {
-        $this->refreshToken = $accessToken;
+        $this->refreshToken = $refreshToken;
         $this->plainTextToken = $plainTextToken;
     }
 

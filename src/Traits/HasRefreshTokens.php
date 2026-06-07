@@ -13,15 +13,23 @@ trait HasRefreshTokens
     protected ?PersonalRefreshToken $refreshToken;
 
     /**
-     * Get the access tokens that belong to model.
+     * Get the refresh tokens that belong to the model.
+     *
+     * @return MorphMany<PersonalRefreshToken, $this>
      */
     public function refreshTokens(): MorphMany
     {
         return $this->morphMany(PersonalRefreshToken::class, 'tokenable');
     }
 
-    public function createRefreshToken(?DateTimeInterface $expiresAt = null, ?int $accessTokenId = null): NewRefreshToken
-    {
+    /**
+     * @param  list<string>  $abilities
+     */
+    public function createRefreshToken(
+        ?DateTimeInterface $expiresAt = null,
+        ?int $accessTokenId = null,
+        array $abilities = ['*']
+    ): NewRefreshToken {
         $plainTextToken = sprintf(
             '%s%s%s',
             config('sanctum.token_prefix', ''),
@@ -32,6 +40,7 @@ trait HasRefreshTokens
         $token = $this->refreshTokens()->create([
             'access_token_id' => $accessTokenId,
             'token' => hash('sha256', $plainTextToken),
+            'abilities' => $abilities,
             'expires_at' => $expiresAt,
         ]);
 
