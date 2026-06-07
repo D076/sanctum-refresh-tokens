@@ -12,16 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `abilities` column on `personal_refresh_tokens` (new migration) so a token's scope
   is persisted on the refresh token and survives across refreshes.
-- Laravel 13 support (`illuminate/*: ^11.0|^12.0|^13.0`).
+- Laravel 13 support.
 - Test suite: Pest + Orchestra Testbench, covering refresh-token hashing, rotation,
   replay protection, TTL enforcement, login/logout and password reset.
 - Cross-database coverage — the suite runs against SQLite, PostgreSQL and MySQL.
 - PHPStan + Larastan static analysis at **level 6** (`phpstan.neon`).
-- GitHub Actions CI matrix (PHP 8.3/8.4/8.5 × Laravel 11/12/13) plus a cross-database job.
+- GitHub Actions CI matrix (PHP 8.3/8.4/8.5 × Laravel 12/13) plus a cross-database job.
 - `.gitattributes` to keep dev-only files out of the `composer require` dist archive.
 - `LICENSE` file (MIT) and a rewritten, comprehensive `README.md`.
 
 ### Changed
+- **BC:** dropped Laravel 11 support — now requires Laravel `^12.0|^13.0`.
 - **BC:** minimum PHP raised to **8.3** (matches Laravel 13's requirement; drops 8.2).
 - **BC:** declared dependencies explicitly — added `illuminate/auth`,
   `illuminate/notifications` and `laravel/framework` (the base `AuthenticatableUser`

@@ -30,10 +30,10 @@ SPAs and mobile apps.
 | | Version |
 |---|---|
 | PHP | `^8.3` |
-| Laravel | `11`, `12`, `13` |
+| Laravel | `12`, `13` |
 | Sanctum | `^4.0` |
 
-Tested against PHP 8.3 / 8.4 / 8.5 and Laravel 11 / 12 / 13 on SQLite, PostgreSQL and MySQL.
+Tested against PHP 8.3 / 8.4 / 8.5 and Laravel 12 / 13 on SQLite, PostgreSQL and MySQL.
 
 ## Installation
 
